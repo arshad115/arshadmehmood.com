@@ -59,6 +59,7 @@ test('JSON-LD graph has Person, WebSite, Blog, and BlogPosting', () => {
   assert.equal(person.identifier, 'arshad115');
   assert.equal(person.givenName, 'Arshad');
   assert.equal(person.familyName, 'Mehmood');
+  assert.ok(person.sameAs.includes('https://www.wikidata.org/wiki/Q76452774'));
   assert.equal(person.worksFor.name, 'SAP SE');
   assert.equal(person.worksFor.sameAs, 'https://www.wikidata.org/wiki/Q552581');
   assert.equal(person.alumniOf.name, 'University of Mannheim');

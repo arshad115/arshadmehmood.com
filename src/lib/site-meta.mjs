@@ -36,6 +36,7 @@ export const SITE = {
     'Android Development',
   ],
   github: 'https://github.com/arshad115',
+  wikidata: 'https://www.wikidata.org/wiki/Q76452774',
   linkedin: 'https://www.linkedin.com/in/arshadmehmood115/',
   twitter: 'https://x.com/arshad115',
   twitterHandle: '@arshad115',

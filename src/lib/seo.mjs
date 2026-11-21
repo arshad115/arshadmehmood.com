@@ -88,7 +88,7 @@ export function personNode() {
       '@type': 'PostalAddress',
       addressCountry: SITE.country,
     },
-    sameAs: [SITE.github, SITE.linkedin, SITE.twitter, SITE.instagram],
+    sameAs: [SITE.github, SITE.linkedin, SITE.twitter, SITE.instagram, SITE.wikidata],
   };
 }
 
