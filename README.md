@@ -2,7 +2,7 @@
 
 Plain [Astro](https://astro.build) static site for [arshadmehmood.com](https://arshadmehmood.com).
 
-The Astro site lives in `arshad115/arshadmehmood.com` on `main`. GitHub Actions validates changes. Cloudflare Workers Builds handles deployment. The legacy site serves production until cutover.
+I write about Go, Kubernetes, self-hosting, and the tools I build.
 
 ## Develop
 
@@ -50,16 +50,3 @@ Live Jekyll URLs are frozen in `tests/fixtures/jekyll-sitemap.xml`. After follow
 ## Comments
 
 Giscus uses the Announcements discussion category in this repository on **posts only**. Grant the Giscus GitHub App access to this repository. The build includes the public repository and category IDs. Override them through the environment if needed, or set `COMMENTS_DISABLED=true` to disable comments.
-
-## Deploy
-
-GitHub Actions runs unit tests, `astro check`, the production build, URL/HTML contract tests, and the official Lighthouse CI CLI for pull requests and pushes to `main`. Lighthouse reports are retained as workflow artifacts.
-
-Cloudflare Workers Builds owns preview and production deployments. The Astro build stays static; `worker/index.js` handles HTTPS and legacy redirects, preview indexing headers, and the contact API, then serves files through the static asset binding. All builds use the production origin for canonical URLs and feed identifiers. In Cloudflare, set the production branch to `main`, enable preview builds, and configure:
-
-- Build command: `npm run build`
-- Deploy command: `npx wrangler deploy`
-- Preview command: `npx wrangler preview`
-- Encrypted Worker secret: `W3FORMS_ACCESS_KEY`
-
-For local Worker testing, copy `.dev.vars.example` to `.dev.vars`, insert a development Web3Forms key, and run `npm run preview:worker`. Never commit `.dev.vars`.
