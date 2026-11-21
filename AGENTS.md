@@ -1,6 +1,6 @@
 # Agent notes — arshadmehmood.com
 
-The Astro site lives in `arshad115/arshadmehmood.com` on `main`. GitHub Actions validates changes. Cloudflare Workers Builds handles deployment. The legacy site serves production until cutover.
+The Astro site lives in `arshad115/arshadmehmood.com` on `main`. GitHub Actions validates changes. Cloudflare Workers Builds handles deployment. The production build tracks this repository’s main branch. The contact form uses the Worker runtime secret.
 
 This file is the live contract. `docs/plain-astro-restart.md` is historical context for the Starlight false start. Ignore root `MIGRATION_PLAN.md`.
 
