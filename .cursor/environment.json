@@ -1,0 +1,16 @@
+{
+  "name": "Arshad Mehmood Blog (Astro)",
+  "install": "bash .cursor/install.sh",
+  "terminals": [
+    {
+      "name": "Astro dev",
+      "command": "npm run dev -- --host 0.0.0.0 --port 4321"
+    }
+  ],
+  "ports": [
+    {
+      "name": "Astro",
+      "port": 4321
+    }
+  ]
+}

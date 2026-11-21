@@ -1,0 +1,81 @@
+---
+import { giscus, giscusEnabled } from '../lib/giscus';
+
+const {
+  repo,
+  repoId,
+  category,
+  categoryId,
+  mapping,
+  strict,
+  reactionsEnabled,
+  emitMetadata,
+  inputPosition,
+  theme,
+  lang,
+  lightTheme,
+  darkTheme,
+} = giscus;
+---
+
+{
+  giscusEnabled ? (
+    <section class="comments" data-comments="giscus">
+      <h2>Discussion</h2>
+      <p class="comments-fallback">Join the conversation on <a href={`https://github.com/${repo}/discussions`}>GitHub Discussions</a>.</p>
+      <script
+        is:inline
+        src="https://giscus.app/client.js"
+        data-repo={repo}
+        data-repo-id={repoId}
+        data-category={category}
+        data-category-id={categoryId}
+        data-mapping={mapping}
+        data-strict={strict}
+        data-reactions-enabled={reactionsEnabled}
+        data-emit-metadata={emitMetadata}
+        data-input-position={inputPosition}
+        data-theme={theme}
+        data-lang={lang}
+        crossorigin="anonymous"
+        async
+      ></script>
+      <script is:inline define:vars={{ theme, lightTheme, darkTheme }}>
+        (() => {
+          const section = document.querySelector('[data-comments="giscus"]');
+          window.addEventListener('message', (event) => {
+            const frame = section?.querySelector('iframe.giscus-frame');
+            if (event.origin !== 'https://giscus.app' || event.source !== frame?.contentWindow) return;
+            if (Number(event.data?.giscus?.resizeHeight) > 0) section?.classList.add('comments-ready');
+          });
+          const siteTheme = () =>
+            document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+          const resolveTheme = () => {
+            if (theme && theme !== 'preferred_color_scheme') return theme;
+            return siteTheme() === 'dark' ? darkTheme : lightTheme;
+          };
+          const sync = () => {
+            const iframe = document.querySelector('iframe.giscus-frame');
+            if (!iframe?.contentWindow) return;
+            iframe.contentWindow.postMessage(
+              { giscus: { setConfig: { theme: resolveTheme() } } },
+              'https://giscus.app',
+            );
+          };
+          window.addEventListener('themechange', sync);
+          window.addEventListener('load', () => setTimeout(sync, 50));
+          new MutationObserver((mutations) => {
+            if (mutations.some((mutation) => mutation.attributeName === 'data-theme')) sync();
+          }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+        })();
+      </script>
+    </section>
+  ) : (
+    <section class="comments" data-comments="off">
+      <h2>Discussion</h2>
+      <p>
+        Have a question or something to add? <a href="/contact/">Get in touch</a>.
+      </p>
+    </section>
+  )
+}

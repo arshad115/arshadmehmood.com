@@ -1,0 +1,10 @@
+---
+description: Plain Astro migration rules for this personal site
+alwaysApply: true
+---
+
+This repo is a **plain Astro** rebuild of arshadmehmood.com. Follow `AGENTS.md` (live contract). `docs/plain-astro-restart.md` is historical. Ignore `MIGRATION_PLAN.md`.
+
+Do not use Starlight, Pelagornis, or any npm blog theme. Do not merge the failed `codex/astro-starlight-migration` branch. The legacy site serves production until cutover. GitHub Actions is validation only.
+
+Live Jekyll paths are in `tests/fixtures/jekyll-sitemap.xml`. After following redirects, the landing path must be real HTML. Clean kebab slugs are canonical; `$`, parentheses, and mixed-case live URLs are aliases only. Giscus on posts only. Static files in `public/`. Fail the build if the `today-i-learned` submodule is missing.

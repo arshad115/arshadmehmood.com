@@ -1,0 +1,71 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+const items = headings.filter(
+  (heading) => heading.depth === 2 && !/^table of contents$/i.test(heading.text.trim()),
+);
+---
+
+{items.length > 2 && (
+  <details class="toc" open data-pagefind-ignore>
+    <summary>On this page <span>{items.length} sections</span></summary>
+    <ol>
+      {items.map((heading) => (
+        <li style={`margin-left: ${(heading.depth - 2) * 0.9}rem`}>
+          <a href={`#${heading.slug}`}>{heading.text}</a>
+        </li>
+      ))}
+    </ol>
+  </details>
+)}
+
+<script>
+  const toc = document.querySelector<HTMLDetailsElement>('.toc');
+  const narrow = window.matchMedia('(max-width: 999px)');
+
+  const syncToc = () => {
+    if (!toc) return;
+    toc.open = !narrow.matches;
+  };
+
+  syncToc();
+  narrow.addEventListener('change', syncToc);
+
+  const links = [...(toc?.querySelectorAll<HTMLAnchorElement>('a') ?? [])];
+  const sections = links
+    .map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
+    .filter((heading): heading is HTMLElement => heading instanceof HTMLElement);
+
+  const markCurrent = () => {
+    if (sections.length === 0) return;
+    const line = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 96;
+    let current = sections[0];
+    for (const section of sections) {
+      if (section.getBoundingClientRect().top <= line + 8) current = section;
+    }
+    for (const link of links) {
+      const active = current?.id && decodeURIComponent(link.hash.slice(1)) === current.id;
+      if (active) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    }
+  };
+
+  markCurrent();
+  window.addEventListener('scroll', markCurrent, { passive: true });
+  window.addEventListener('resize', markCurrent);
+
+  links.forEach((link) => {
+    link.addEventListener('click', () => {
+      if (narrow.matches && toc) toc.open = false;
+    });
+  });
+</script>

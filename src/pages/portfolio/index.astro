@@ -1,0 +1,103 @@
+---
+import Base from '../../layouts/Base.astro';
+import { projectGroups } from '../../data/projects';
+import { getPortfolio } from '../../lib/content';
+import { imageSize } from '../../lib/image-size.mjs';
+import { SITE } from '../../lib/site';
+
+const entries = await getPortfolio();
+const SMALL_WORDS = new Set(['a', 'an', 'and', 'the', 'in', 'of', 'for', 'to', 'with', 'on']);
+const ACRONYMS = new Set(['UAE', 'C#', 'MS', 'DB', 'API', 'CSS', 'SQL', 'CLI']);
+const projectLabel = (name: string) => name
+  .split('-')
+  .map((part, index) => {
+    const upper = part.toUpperCase();
+    if (ACRONYMS.has(upper)) return upper;
+    if (part.length === 1) return upper;
+    if (index > 0 && SMALL_WORDS.has(part.toLowerCase())) return part.toLowerCase();
+    return part.charAt(0).toUpperCase() + part.slice(1);
+  })
+  .join(' ');
+const groups = projectGroups.map((group) => ({
+  ...group,
+  items: group.items.map((item) => ({
+    ...item,
+    displayName: item.title ?? projectLabel(item.name),
+    imageAlt: item.image ? `Screenshot of ${item.title ?? projectLabel(item.name)}` : undefined,
+    imageDimensions: item.image ? imageSize(item.image) : undefined,
+  })),
+}));
+---
+
+<Base
+  title="Portfolio"
+  description="Android apps, chatbots, and other shipped work."
+  permalink="/portfolio/"
+  pageType="CollectionPage"
+>
+  <div class="collection-shell">
+    <header class="collection-intro">
+    <p class="kicker">Work</p>
+    <h1>Portfolio</h1>
+    <p class="lede">A few things I’ve built over the years, from Android apps I published under Kookydroid to the plugin I use in Obsidian.</p>
+    <ul class="project-index">
+      {groups.map((group) => (
+        <li>
+          <a href={`#${group.id}`}>{group.name}</a>
+        </li>
+      ))}
+    </ul>
+    <p>
+      <a href={SITE.github}>GitHub profile</a>
+    </p>
+    </header>
+
+  {groups.map((group) => (
+    <section class="taxonomy project-group" id={group.id}>
+      <h2>{group.name}</h2>
+      {group.items.map((item) => (
+        <article class="project-row">
+          {item.image && (
+            <div class="project-image">
+              <img
+                src={item.image}
+                alt={item.imageAlt}
+                width={item.imageDimensions?.width}
+                height={item.imageDimensions?.height}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          )}
+          <div class="project-copy">
+            <p class="project-status">{item.status}</p>
+            <h3>{item.displayName}</h3>
+            <p>{item.description}</p>
+            <dl class="project-facts">
+              <div><dt>Role</dt><dd>{item.role}</dd></div>
+              <div><dt>Stack</dt><dd>{item.stack.join(' · ')}</dd></div>
+            </dl>
+            {item.href && <a class="project-link" href={item.href}>
+              {item.href.startsWith('/') ? `Read ${item.displayName}` : `View ${item.displayName}`} <span aria-hidden="true">→</span>
+            </a>}
+          </div>
+        </article>
+      ))}
+    </section>
+  ))}
+
+  {entries.length > 0 && (
+    <section class="taxonomy" id="notes">
+      <h2>Write-ups</h2>
+      <ul>
+        {entries.map((entry) => (
+          <li>
+            <a href={entry.permalink}>{entry.title}</a>
+            {entry.excerpt && ` — ${entry.excerpt}`}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+  </div>
+</Base>

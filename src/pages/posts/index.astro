@@ -1,0 +1,43 @@
+---
+import Base from '../../layouts/Base.astro';
+import EntryList from '../../components/EntryList.astro';
+import { getPosts } from '../../lib/content';
+
+const posts = await getPosts();
+const years = Object.entries(
+  posts.reduce<Record<string, typeof posts>>((groups, post) => {
+    const year = String(post.date?.getUTCFullYear() ?? 'Earlier');
+    (groups[year] ??= []).push(post);
+    return groups;
+  }, {}),
+).sort(([a], [b]) => b.localeCompare(a));
+---
+
+<Base
+  title="All posts"
+  description="Browse Arshad Mehmood’s articles on Go, Kubernetes, DevOps and self-hosting, organised by year."
+  permalink="/posts/"
+  pageType="CollectionPage"
+>
+  <div class="collection-shell posts-shell">
+    <header class="collection-intro">
+    <p class="kicker">Index</p>
+    <h1>All posts</h1>
+    <p class="lede">Everything I’ve written here since 2018, newest first.</p>
+    <nav class="collection-links" aria-label="Browse posts">
+      <a href="/categories/">Browse categories</a>
+      <a href="/tags/">Browse tags</a>
+      <button type="button" data-search-open>Search everything</button>
+    </nav>
+    </header>
+    <nav class="year-nav" aria-label="Jump to year">
+      {years.map(([year]) => <a href={`#year-${year}`}>{year}</a>)}
+    </nav>
+    {years.map(([year, entries]) => (
+      <section class="year-group" aria-labelledby={`year-${year}`}>
+        <h2 id={`year-${year}`}>{year}</h2>
+        <EntryList entries={entries} headingLevel="h3" />
+      </section>
+    ))}
+  </div>
+</Base>

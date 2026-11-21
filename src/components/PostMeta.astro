@@ -1,0 +1,26 @@
+---
+import PostTags from './PostTags.astro';
+import { formatDate } from '../lib/site';
+import type { SiteEntry } from '../lib/content';
+
+interface Props {
+  entry: SiteEntry;
+  showTags?: boolean;
+}
+
+const { entry, showTags = true } = Astro.props;
+---
+
+<p class="meta" data-pagefind-ignore>
+  {entry.category && (
+    <a href={entry.categoryPath || `/categories/#${entry.category}`}>{entry.categoryLabel || entry.category}</a>
+  )}
+  {entry.date && <time datetime={entry.date.toISOString()}>{formatDate(entry.date)}</time>}
+  {entry.updated && (
+    <span>
+      Updated <time datetime={entry.updated.toISOString()}>{formatDate(entry.updated)}</time>
+    </span>
+  )}
+  {(entry.kind === 'post' || entry.kind === 'til') && <span>{entry.minutes} min read</span>}
+</p>
+{showTags && <PostTags tags={entry.tags} />}

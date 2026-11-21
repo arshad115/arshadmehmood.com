@@ -1,0 +1,57 @@
+import { ensureTil } from './scripts/lib/scaffold.mjs';
+import path from 'node:path';
+import { SITE } from './src/lib/site-meta.mjs';
+import expressiveCode from 'astro-expressive-code';
+import { defineConfig } from 'astro/config';
+import { unified } from '@astrojs/markdown-remark';
+import {
+  rehypeLocalImageDimensions,
+  rehypeTaskLabels,
+  remarkNormalizeHeadingDepth,
+  remarkRewriteJekyll,
+  remarkStripJekyllRaw,
+} from './src/lib/jekyll.ts';
+import { astroRedirects } from './scripts/legacy-url-redirects.mjs';
+
+ensureTil(path.resolve('today-i-learned'));
+
+export default defineConfig({
+  site: SITE.url,
+  output: 'static',
+  trailingSlash: 'always',
+  redirects: astroRedirects,
+  build: {
+    format: 'directory',
+    // The complete shared stylesheet is small enough to ship with the document.
+    // Inlining removes a render-blocking request and lets the browser discover
+    // the preloaded body font without waiting for a CSS round trip.
+    inlineStylesheets: 'always',
+  },
+  markdown: {
+    processor: unified({
+      remarkPlugins: [remarkRewriteJekyll, remarkStripJekyllRaw, remarkNormalizeHeadingDepth],
+      rehypePlugins: [rehypeLocalImageDimensions, rehypeTaskLabels],
+    }),
+  },
+  integrations: [
+    expressiveCode({
+      themes: ['github-light', 'github-dark'],
+      useDarkModeMediaQuery: false,
+      themeCssSelector: (theme) => `[data-theme='${theme.type}']`,
+      defaultProps: {
+        wrap: false,
+        frame: 'none',
+        overridesByLang: {
+          'bash,console,powershell,sh,shell,terminal,zsh': { wrap: false },
+        },
+      },
+      styleOverrides: {
+        borderRadius: '0.5rem',
+        frames: { shadowColor: 'transparent' },
+        codeFontFamily: 'var(--font-mono)',
+        codeFontSize: '0.9rem',
+        codeLineHeight: '1.55',
+      },
+    }),
+  ],
+});

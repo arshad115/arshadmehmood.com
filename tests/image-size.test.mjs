@@ -1,0 +1,33 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { test } from 'node:test';
+import { fileURLToPath } from 'node:url';
+import { imageSize, sizeFromBuffer } from '../src/lib/image-size.mjs';
+
+const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+
+test('sizeFromBuffer reads PNG IHDR dimensions', () => {
+  const png = Buffer.from(
+    '89504e470d0a1a0a0000000d494844520000000a00000014080100000000',
+    'hex',
+  );
+  assert.deepEqual(sizeFromBuffer(png), { width: 10, height: 20 });
+});
+
+test('imageSize reads a real public asset', () => {
+  const file = path.join(root, 'public/assets/images/arshad-mehmood-software-engineer-germany.jpg');
+  assert.equal(fs.existsSync(file), true);
+  const size = imageSize('/assets/images/arshad-mehmood-software-engineer-germany.jpg');
+  assert.deepEqual(size, { width: 640, height: 640 });
+});
+
+test('default social image has a large landscape sharing ratio', () => {
+  const file = path.join(root, 'public/assets/images/social-default.png');
+  assert.equal(fs.existsSync(file), true);
+  assert.deepEqual(imageSize('/assets/images/social-default.png'), { width: 1200, height: 630 });
+});
+
+test('imageSize returns recorded dimensions for legacy remote images', () => {
+  assert.deepEqual(imageSize('https://i.imgur.com/bTS1Rri.png'), { width: 795, height: 601 });
+});
