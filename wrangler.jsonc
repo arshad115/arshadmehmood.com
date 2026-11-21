@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "arshadmehmood-com",
+  "name": "arshad115-github-io",
+  "keep_vars": true,
   "compatibility_date": "2026-10-20",
   "main": "./worker/index.js",
   "assets": {
